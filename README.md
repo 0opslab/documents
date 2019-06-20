@@ -33,7 +33,7 @@
 
 linux相关的一些说明和脚本
 
-* [denyssh_ip_script.sh](linux/bash/denyssh_ip_script.sh) 拒绝ssh链接
+* [denyssh_ip_script.sh](linux/bash/denyssh_ip_script.sh)  此脚本用于分析统计secure日记文件，对ssh登录错误次数较多的IP用iptables封掉
 
 
 
