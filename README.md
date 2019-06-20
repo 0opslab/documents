@@ -8,7 +8,24 @@
 
 常用的软件有zookeeper、kafka、spark等等常用操作及说明
 
-[kafka常用操作及说明](arch/kafka.md) 
+	*  [kafka常用操作及说明](arch/kafka.md) 
+	*  [zookeeper常用操作及说明](arch/zookeeper.md) 
 
-[zookeeper常用操作及说明](arch/zookeeper.md) 
+
+
+## tools
+
+常用工具和命令
+
+	* [docker](tools/docker.md) - docker
+	* [fiddler](tools/fiddler.md) - fiddler的使用帮助文档
+	* [git](tools/git-help.md) - git的使用帮助文档
+
+
+
+## java
+
+* [java-fqa](java/java-fqa.md) - Java常见问题答疑
+
+  
 
