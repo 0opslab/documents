@@ -1,4 +1,4 @@
-
+﻿
 #@func - 通过netstat统计各个状态的信息
 netstatcount(){
     # LAST_ACK 5   (正在等待处理的请求数) 
@@ -40,3 +40,12 @@ netspeed(){
 	        echo "TX $1: $TKBPS kb/s RX $1: $RKBPS kb/s"
 	done
 }
+
+
+所以，只要
+
+ll /proc/${PID}/fd | wc -l
+
+ll /proc/${PID}/task | wc -l （效果等同pstree -p | wc -l）
+
+就能知道进程打开的句柄数和线程数
