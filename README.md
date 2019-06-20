@@ -27,5 +27,13 @@
 
 * [java-fqa](java/java-fqa.md) - Java常见问题答疑
 
-  
+
+
+## linux
+
+linux相关的一些说明和脚本
+
+* [denyssh_ip_script.sh](linux/bash/denyssh_ip_script.sh) 拒绝ssh链接
+
+
 
