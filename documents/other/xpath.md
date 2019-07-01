@@ -145,7 +145,7 @@ XPath 通配符可用来选取未知的 XML 元素
 
 | 名称                                                         | 说明                                                         |
 | :----------------------------------------------------------- | :----------------------------------------------------------- |
-| fn:error()fn:error(error)fn:error(error,description)fn:error(error,description,error-object) | 例子：error(fn:QName('http://example.com/test', 'err:toohigh'), 'Error: Price is too high')结果：向外部处理环境返回 http://example.com/test#toohigh 以及字符串 "Error: Price is too high"。 |
+| fn:error()<br />fn:error(error)<br />fn:error(error,description)<br />fn:error(error,description,error-object) | 例子：error(fn:QName('http://example.com/test', 'err:toohigh'), 'Error: Price is too high')结果：向外部处理环境返回 http://example.com/test#toohigh 以及字符串 "Error: Price is too high"。 |
 | fn:trace(value,label)                                        | 用于对查询进行 debug。                                       |
 
 ## 有关数值的函数
