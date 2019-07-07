@@ -18,6 +18,39 @@ MapReduce是一种分布式计算模型，用以进行大数据量的计算。�
 
 
 
+### HADOOP中的那些概念
+
+主从结构:在一个集群中，会有部分节点充当主服务器的角色，其他服务器是从服务器的角色，当前这种架构模式称为主从结构。主从结构分类：一主多从、多主多从。
+
+Hadoop中的HDFS和YARN都是主从结构，主从结构中的节点和从节点有多重概念或者称谓。
+
+* 主节点、master、管理者、leader、NameNode、ResourceManager
+* 从节点、slave、工作者、follower、DataNode、NodeManager
+
+
+
+
+
+### HADOOP就业指南
+
+大数据是个复合概念，其中包括应用开发，软件平台，算法，数据挖掘，数据分析等多样化的任务，但就HADOOP而言，通常都需要具备以下技能和知识：
+
+
+
+* HADOOP分布式集群的搭建和管理
+
+* HADOOP分布式文件系统HDFS的使用和管理
+
+* HADOOP分布式计算框架的MapReduce的原理理解和编程
+
+* HIVE数据仓库工具的熟练应用
+
+* Flume、sqoop、oozie等辅助工具的熟练使用
+
+
+
+
+
 ### 衍生出的那些并大厂使用的组件
 
 #### HBASE分布式列存储数据库
@@ -28,9 +61,39 @@ HBase是一个建立在HDFS之上，面向列的针对结构化数据的可伸�
 
 #### HIVE 数据仓库
 
-Hive定义了一种类似SQL的查询语言(HQL),将SQL转化为MapReduce任务在Hadoop上执行。通常用于离线分析。HQL用于运行存储在Hadoop上的查询语句，Hive让不熟悉MapReduce开发人员也能编写数据查询语句，然后这些语句被翻译为Hadoop上面的MapReduce任务。
+Hive依赖于HDFS存储数据,并将HQL转换成MapReduce执行，简单的说hive是基于Hadoop的一个数据仓库工具，其本质就是基于HDFS的MepReduce计算框架，对存储在HDFS中的数据进行分析和管理。通常用于离线分析。HQL用于运行存储在Hadoop上的查询语句，Hive让不熟悉MapReduce开发人员也能编写数据查询语句，然后这些语句被翻译为Hadoop上面的MapReduce任务。
 
+hive不支持记录级别的增删改操作
 
+hive的查询延时很严重，因此不能用再交互查询系统中
+
+hive不支持事务，所以觉得其主要用来做OLAP处理而不是OLTP处理
+
+总的来说Hive 具有 SQL 数据库的外表，但应用场景完全不同，**Hive 只适合用来做海量离线数 据统计分析，也就是数据仓库**
+
+#####  HIVE的架构
+
+**HIVE主要有四部分组成**：
+
+* 用户接口shell/CLI, jdbc/odbc, webui Command Line Interface
+* 跨语言服务
+* 底层的Driver
+* 元数据存储系统
+
+**Hive的数据组织**
+
+hive的存储结构包括数据库、表、试图、分区和表数据等。数据库、表、分区等等都对应HDFS上的一个目录。表数据对应HDFS对应目录下的文件。HIVE中所有的数据都存储在HDFS中，每有专门的数据存储格式，因为HIVE是读模式（Schema on read）可支持TextFile\sequenceFile\RCFile或者自定格式等。只需要在创建表的时候告诉HIVE数据中的列风格符和行分隔符，HIVE就可以解析数据.
+
+**HIVE中的数据模型**
+
+- database：在HDFS中表现为${hive.metastore.warehouse.dir}目录下一个文件夹
+- table: 在HDFS中表现所属database目录下一个文件夹
+- external table: 与table类似，不过其数据存放位置可以指定任意HDFS目录路径
+- partition：在HDFS中表现为table目录下的子目录
+- bucket：在HDFS中可以表现为同一个表目录或者分区目录下跟据某个字段的值进行hash散列之后的多个文件
+- view： 与传统数据库类似，只读基于基本表创建。
+
+HIVE的元数据存储在RDBMS中，除元数据外的去其他所有数据都基于HDFS存储，默认情况下hive元数据保存在内嵌的Derby数据库中，只能允许一个会话用于简单的测试。实际生产环节中不适用，为了支持多用户会话，则需要一个独立的元数据库，使用Mysql作为元数据库，HIVE内部对MYSQL提供了很好的支持。另外Hive中的表分为内部表、外部表、分区表和Bucket表。
 
 #### SPRAK
 

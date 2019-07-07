@@ -10,10 +10,92 @@ hadoop是受google论文的启发，开发出来的。是一个适合大数据�
 
 hdfs和mapreduce都是主从结构，管理与被管理这种关系，分为管理者和被管理者，被管理者通常做具体的事物，管理着通常是组织、协调、管理的。
 
-* 主节点，只有一个NameNode，负责哥哥节点数据的组织管理
+* 主节点，只有一个NameNode，负责各个节点数据的组织管理
 * 从节点，有很多的DataNode，负责存储数据，数据节点
 
 NameNode对外DataNode对内，NameNode接收用户的操作请求，NameNode负责协调管理，不是真正的存放数据会把把数据分散到各个节点上去存储。
+
+当然一般都是只有一个NameNode，但在某些情况下着是不可靠的。因此Hadoop还提供SecondaryNameNode着种方式。
+
+NameNode：是Master节点，是大领导。管理数据块映射；处理客户端的读写请求；配置副本策略；管理HDFS的名称空间；
+SecondaryNameNode：是一个小弟，分担大哥namenode的工作量；是NameNode的冷备份；合并fsimage和fsedits然后再发给namenode。
+DataNode：Slave节点，奴隶，干活的。负责存储client发来的数据块block；执行数据块的读写操作。
+　　　　热备份：b是a的热备份，如果a坏掉。那么b马上运行代替a的工作。
+　　　　冷备份：b是a的冷备份，如果a坏掉。那么b不能马上代替a工作。但是b上存储a的一些信息，减少a坏掉之后的损失。
+fsimage:元数据镜像文件（文件系统的目录树。）
+edits：元数据的操作日志（针对文件系统做的修改操作记录）
+namenode内存中存储的是=fsimage+edits。
+SecondaryNameNode负责定时默认1小时，从namenode上，获取fsimage和edits来进行合并，然后再发送给namenode。减少namenode的工作量。
+
+
+
+**NameNode**  的工作机制尤其是对元数据管理机制，可以增强HDFS工作原理的理解，可以更好的进行性能调优，Namenode故障问题的分析解决能力。NameNode的主要职责：
+
+* 负责客户端请求(读写数据，请求)的响应
+* 维护目录结构树(元数据的管理：查询，修改)
+* 配置和应用副本存放策略
+* 管理集群数据块负载均衡问题
+
+NameNode对数据的管理采用了俩种存储形式:内存和磁盘。其中内存中有一份完整的元数据(内存metadata)，磁盘中有一个“准完整”的元数据镜像fsimage文件(在namenode的工作目录中)。当客户端对hdfs中的文件进行新增或者修改操作，记录首先会写入到磁盘中edits文件中，当操作成功后，相应的元数据才会更新到内存的metadata中，随后才后写入到fsimage文件即同步到磁盘中。
+
+磁盘元数据镜像文件fsimage_0000000000000000555等价于edits_0000000000000000001-0000000000000000555合并的结果。数据预写入操作日志文件edits_inprogress_0000000000000000556成功后会优先写入到内存的metadata中。
+
+**DataNode** 的工作职责就就是负责存储管理用户的文件块数据，定期向namenode汇报自身持有的block信息(通过心跳信息)上报。datanode进程死亡或者网络故障造成datanode无法与namenode通信，namenode不会立即把该节点判定为死亡，要经过一段时间。HDFS默认的超时时长为10分钟+30秒，如果定义超时为timeout，则超时时长的计算公式为： timeout = 2 * heartbeat.recheck.interval + 10 * dfs.heartbeat.interval
+
+
+
+**SecondaryNameNode**的作用就是分担namenode的合并元数据的压力，所以在配置secondaryName的工作节点时，一定切记，不要和namenode处于同一节点。但事实上，只有在普通的伪分布式集群中才会有secondaryNamenode这个角色，在HA或者联邦集群中都不再出现该角色，再HA和联邦集群中，都是有standbyName承担。每隔一段时间，会由 secondary namenode 将 namenode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 checkpoint）
+
+## Hadoop的核心配置
+
+hadoop的核心配置文件有如下即可
+
+```bash
+## 一般是修改一些环境变量等sh文件
+xx/etc/hadoop/hadoop-env.sh
+xx/etc/hadoop/yarn-env.sh
+xx/etc/hadoop/mapred-env.sh
+xx/etc/hadoop/savles
+
+## 具体的配置
+xx/etc/hadoop/core-site.xml
+	fs.defaultFS		配置hdfs系统的地址,在那一台配，Namenode就在那一台启动
+	io.file.buffer.size 该属性值单位为KB，131072KB即为默认的64M
+xx/etc/hadoop/hdfs-site.xml
+	dfs.replication  分片数量、伪分布式将其配置成1即可
+    dfs.namenode.name.dir 命名空间和事务在本地文件系统永久存储的路径
+    dfs.blocksize	大文件系统HDFS块大小为256M，默认值为64M
+xx/etc/hadoop/mapred-site.xml
+	mapreduce.framework.name 执行框架设置为 Hadoop YARN.
+	mapreduce.map.memory.mb	 对maps更大的资源限制的.
+	mapreduce.map.java.opts	 maps中对jvm child设置更大的堆大小
+	mapreduce.reduce.memory.mb	设置 reduces对于较大的资源限制
+	mapreduce.task.io.sort.factor 在文件排序中更多的流合并为一次
+	mapreduce.reduce.shuffle.parallelcopies 通过reduces从很多的map中读取较多的平行
+	
+xx/etc/hadoop/yarn-site.xml
+	# 配置ResourceManager 和 NodeManager
+	yarn.resourcemanager.address 客户端对ResourceManager主机通过 host:port 提交作业
+	yarn.resourcemanager.scheduler.address ApplicationMasters 通过ResourceManager主机访问host:port跟踪调度程序获资源
+```
+
+### HADOOP HA和联邦模式
+
+常规的HADOOP集群或伪集群都存在单节点故障，如果NameNode挂了，整个集群都不可用，为此HADOOP提供了HA和联邦模式来解决这个问题。
+
+HA方案：HDFS有俩个NameNode组成，一个处于Active状态，另一个处于standby状态。处于激活状态的NameNode会响应集群中所有的客户端，备份状态的NameNode只是作为一个副本，保证在必要的时候提供一个快速转移。为了让standby NameNode与处于Active NameNode 的状态同步，这俩个Node都与一组称谓JNS的相互独立的经常保持通讯(Journal Nodes).当Active Node上更新了namespace，它将记录修改日志发送给JNS的多数派。Standby noes将会从JNS中读取这些edits，并持续关注它们对日志的变更。Standby Node将日志变更应用在自己的namespace中，当failover发生时，Standby将会在提升自己为Active之前，确保能够从JNS中读取所有的edits，即在failover发生之前Standy持有的namespace应该与Active保持完全同步。
+
+为了支持快速failover，Standby node持有集群中blocks的最新位置是非常必要的。为了达到这一目的，DataNodes上需要同时配置这两个Namenode的地址，同时和它们都建立心跳链接，并把block位置发送给它们。
+
+任何时刻，只有一个Active NameNode是非常重要的，否则将会导致集群操作的混乱，那么两个NameNode将会分别有两种不同的数据状态，可能会导致数据丢失，或者状态异常，这种情况通常称为“split-brain”（脑裂，三节点通讯阻断，即集群中不同的Datanodes却看到了两个Active NameNodes）。对于JNS而言，任何时候只允许一个NameNode作为writer；在failover期间，原来的Standby Node将会接管Active的所有职能，并负责向JNS写入日志记录，这就阻止了其他NameNode基于处于Active状态的问题。
+
+
+
+https://blog.csdn.net/weixin_39915358/article/details/80216366
+
+https://blog.csdn.net/qq_39164068/article/details/88428477
+
+https://www.liangzl.com/get-article-detail-17837.html
 
 
 
