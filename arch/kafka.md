@@ -1,6 +1,10 @@
+### kafka常见问题解答
 
+**kafka的版本问题**
 
-## 常用命令
+kafka没有提供version命令，不确定是否有方便的方法，但你可以进入kafka/libs文件夹。你应该看到像kafka_2.10-0.8.2-beta.jar这样的文件，其中2.10是Scala版本，0.8.2-beta是Kafka版本。
+
+### 常用命令
 
 ```bash
 # 列出集群里的所有主题
