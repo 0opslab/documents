@@ -1,4 +1,4 @@
-## 常用命令
+### 常用命令
 
 ```bash
 # 从公网拉取一个镜像
@@ -58,3 +58,70 @@ docker rm  con_name
 #查看docker网络
 docker network ls
 ```
+
+### docker 创建固定ip的容器
+
+docker安装后，默认会创建下面三种类型的网络,而启动容器的时候，用--network参数可以指定网络类型。默认情况下启动的docker容器，都是使用bridge桥接网络，每次Docker容器重启时，会按照顺序获取对应的IP地址，这个就导致重启下，Docker的IP地址就变了。
+
+```bash
+# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+// 桥接网络
+344af693dee1        bridge              bridge              local
+// 主机网络
+de666e900e5d        host                host                local
+// 无指定网络
+1b9b4d0a48a4        none                null                local
+
+
+# docker run -itd --name test1 --network bridge --ip 172.17.0.10 centos:latest /bin/bash
+
+
+
+## 创建自定义网络
+docker network create --subnet=172.18.0.0/16 mynetwork
+➜ ~ docker network ls
+NETWORK ID     NAME        DRIVER       SCOPE
+9781b1f585ae    bridge       bridge       local
+1252da701e55    host        host        local
+4f11ae9c85de    mynetwork      bridge       local
+237ea3d5cfbf    none        null        local
+
+docker run -itd --name networkTest1 --net mynetwork --ip 172.18.0.2 centos:latest /bin/bash
+```
+
+### docker容器的DNS和主机名
+
+同一个docker镜像可以启动很多容器，它们的主机名并不一样，可知主机名并不是写入镜像中，实际上容器中/etc目录下有三个文件是容器启动后被虚拟文件覆盖掉的，分别是/etc/hostname 、/etc/hosts 、/etc/resolv.conf通过在容器中运行mount命令可以查看。这种能解决主机名的问题,同时也能让DNS及时更新.由于这些文件的维护方法随着docker版本演进而不断变化,因此**尽量不修改这些文件,而是通过docker提供的参数进行相关设置**
+
+```
+# 设置容器的主机名
+-h HOSTNAME 或者 --hostname=HOSTNAME
+
+--dns=IP_ADDRESS
+为容器配置DNS,写在/etc/resolv.conf中
+```
+
+### 备份与回复
+
+都是5G的传输速度达到GB级别，但是万恶的现实总是那么cool。因此到备份到磁盘还是必须的。docker提供了相应的导入到处命令
+
+```bash
+# 从镜像备份
+# docker save [options] images [images...]
+
+# 如下俩条命令是等价的。将镜像nginx:latest导出到nginx.tar文件中
+# docker save -o nginx.tar nginx:latest
+# docker save > nginx.tar nginx:latest
+
+# 如下俩条命令是等价的。将备份文件导入
+# docker load -i nginx.tar
+# docker load < nginx.tar
+
+# 从容器导入导出
+# docker export -o nginx-test.tar nginx-test 
+# docker import nginx-test.tar nginx:imp
+```
+
+
+
