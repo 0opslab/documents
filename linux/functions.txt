@@ -41,6 +41,20 @@ netspeed(){
 	done
 }
 
+#@func - 生成指定目录下的文件hash信息
+function hash_dir(){
+    log_file="/webapp07/nfs/hashlog/69_"`date +%Y%m%d_%H`"_hash.log"
+    for file in `ls $1`
+    do
+        if [ -d $1"/"$file ] 
+        then
+            hash_dir $1"/"$file
+        else
+            hash=`md5sum $1"/"$file`
+            echo $hash >> $log_file
+        fi
+    done
+}
 
 所以，只要
 

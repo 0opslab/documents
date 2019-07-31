@@ -83,19 +83,19 @@ xx/etc/hadoop/yarn-site.xml
 
 常规的HADOOP集群或伪集群都存在单节点故障，如果NameNode挂了，整个集群都不可用，为此HADOOP提供了HA和联邦模式来解决这个问题。
 
-HA方案：HDFS有俩个NameNode组成，一个处于Active状态，另一个处于standby状态。处于激活状态的NameNode会响应集群中所有的客户端，备份状态的NameNode只是作为一个副本，保证在必要的时候提供一个快速转移。为了让standby NameNode与处于Active NameNode 的状态同步，这俩个Node都与一组称谓JNS的相互独立的经常保持通讯(Journal Nodes).当Active Node上更新了namespace，它将记录修改日志发送给JNS的多数派。Standby noes将会从JNS中读取这些edits，并持续关注它们对日志的变更。Standby Node将日志变更应用在自己的namespace中，当failover发生时，Standby将会在提升自己为Active之前，确保能够从JNS中读取所有的edits，即在failover发生之前Standy持有的namespace应该与Active保持完全同步。
+**HA方案**
+
+HDFS有俩个NameNode组成，一个处于Active状态，另一个处于standby状态。处于激活状态的NameNode会响应集群中所有的客户端，备份状态的NameNode只是作为一个副本，保证在必要的时候提供一个快速转移。为了让standby NameNode与处于Active NameNode 的状态同步，这俩个Node都与一组称谓JNS的相互独立的经常保持通讯(Journal Nodes).当Active Node上更新了namespace，它将记录修改日志发送给JNS的多数派。Standby noes将会从JNS中读取这些edits，并持续关注它们对日志的变更。Standby Node将日志变更应用在自己的namespace中，当failover发生时，Standby将会在提升自己为Active之前，确保能够从JNS中读取所有的edits，即在failover发生之前Standy持有的namespace应该与Active保持完全同步。
 
 为了支持快速failover，Standby node持有集群中blocks的最新位置是非常必要的。为了达到这一目的，DataNodes上需要同时配置这两个Namenode的地址，同时和它们都建立心跳链接，并把block位置发送给它们。
 
 任何时刻，只有一个Active NameNode是非常重要的，否则将会导致集群操作的混乱，那么两个NameNode将会分别有两种不同的数据状态，可能会导致数据丢失，或者状态异常，这种情况通常称为“split-brain”（脑裂，三节点通讯阻断，即集群中不同的Datanodes却看到了两个Active NameNodes）。对于JNS而言，任何时候只允许一个NameNode作为writer；在failover期间，原来的Standby Node将会接管Active的所有职能，并负责向JNS写入日志记录，这就阻止了其他NameNode基于处于Active状态的问题。
 
+**Federation 联邦模式**
 
+Federation 中文意思为联邦,联盟，是 NameNode 的 Federation,也就是会有多个NameNode。多个 NameNode 的情况意味着有多个 namespace(命名空间)，区别于 HA 模式下的多 NameNode，它们是拥有着同一个 namespace。HDFS Federation 并没有完全解决单点故障问题。虽然 namenode/namespace 存在多个，但是从单个 namenode/namespace 看，仍然存在单点故障：如果某个 namenode 挂掉了，其管理的相应的文件便不可以访问。Federation中每个namenode仍然像之前HDFS上实现一样，配有一个 secondary namenode，以便主 namenode 挂掉一下，用于还原元数据信息。所以一般集群规模真的很大的时候，会采用 HA+Federation 的部署方案。也就是每个联合的 namenodes 都是 ha 的。
 
-https://blog.csdn.net/weixin_39915358/article/details/80216366
-
-https://blog.csdn.net/qq_39164068/article/details/88428477
-
-https://www.liangzl.com/get-article-detail-17837.html
+这也可以是hadoop最大的败笔所在。
 
 
 
