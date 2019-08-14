@@ -391,6 +391,62 @@ DELETE /blog/segmentfault/2
   }
   ```
 
+### SQL查询
+
+ES6.x中开始通过xpack的方式提供了SQL检索方式，避免DSL语言的学习成本。当然如果要在在程序中以JDBC的方式连接的需要白金会员的key才行。当对于交互式或者SQL转DSL的方式可以免费的使用。
+
+```JSON
+### 直接使用SQL的方式进行检索
+POST /_xpack/sql?format=txt
+{
+    "query": "select inter,(responsetime -requesttime ) request_time  from boss order by request_time desc"
+}
+
+### 将SQL转换成DSL进行查询
+POST /_xpack/sql/translate
+{
+    "query": "select inter,(responsetime -requesttime ) request_time  from boss order by request_time desc"
+}
+//返回
+{
+  "size" : 1000,
+  "_source" : {
+    "includes" : [
+      "inter"
+    ],
+    "excludes" : [ ]
+  },
+  "docvalue_fields" : [
+    {
+      "field" : "responsetime",
+      "format" : "use_field_mapping"
+    },
+    {
+      "field" : "requesttime",
+      "format" : "use_field_mapping"
+    }
+  ],
+  "sort" : [
+    {
+      "_script" : {
+        "script" : {
+          "source" : "InternalSqlScriptUtils.nullSafeSortNumeric(InternalSqlScriptUtils.sub(InternalSqlScriptUtils.docValue(doc,params.v0),InternalSqlScriptUtils.docValue(doc,params.v1)))",
+          "lang" : "painless",
+          "params" : {
+            "v0" : "responsetime",
+            "v1" : "requesttime"
+          }
+        },
+        "type" : "number",
+        "order" : "desc"
+      }
+    }
+  ]
+}
+```
+
+
+
 ###  查询表达式
 
 本节应该属于上大节的最后一个小结，但是因为其重要性因此单独起一节。ES提供了一种非常灵活又富有表现力的查询语言，采用JSON接口的方式实现丰富的查询，并使你的查询语句更灵活、更精确、更易读且易调试，这种方式被称为Query DSL语言。其查用如下的格式就进行查询，可以指定from和size进行分页查询
@@ -510,11 +566,11 @@ GET /_search
 
   　　　　　　`gt`: `>` 大于（greater than）
 
-  　　　　　　`lt`: `<` 小于（less than）
+    　　　　　　`lt`: `<` 小于（less than）
 
-  　　　　　　`gte`: `>=` 大于或等于（greater than or equal to）
+    　　　　　　`gte`: `>=` 大于或等于（greater than or equal to）
 
-  　　　　　　`lte`: `<=` 小于或等于（less than or equal to）
+    　　　　　　`lte`: `<=` 小于或等于（less than or equal to）
 
   ```json
   GET /boss/_search
@@ -642,5 +698,151 @@ GET /_search
   }
   ```
 
-  
+### 排序
+
+在 Elasticsearch 中， 相关性得分 由一个浮点数进行表示，并在搜索结果中通过 _score 参数返回，**默认排序是 _score 降序**。有时，相关性评分对你来说并没有意义，而是需要自定义排序，这个时候可以使用sort进行之自定义排序
+
+```json
+{
+    "query" : {
+        "bool" : {
+            "filter" : { "term" : { "user_id" : 1 }}
+        }
+    },
+    //按照时间排序
+    "sort": { "date": { "order": "desc" }}
+}
+# 多字段排序
+{
+    "query" : {
+        "bool" : {
+            "must":   { "match": { "tweet": "manage text search" }},
+            "filter" : { "term" : { "user_id" : 2 }}
+        }
+    },
+    "sort": [
+        { "date":   { "order": "desc" }},
+        { "_score": { "order": "desc" }}
+    ]
+}
+
+```
+
+### 指标聚合
+
+ES的高级功能聚合Aggregations功能为ES注入了统计分析的血统，使在面对大数据提取统计指标时变的游刃有余。aggregation的部分特性类似于SQL语言中的group by,avg,sum等函数。但同时还提供了更复杂的统计分析接口。agg中有俩个主要的概念.
+
+- 桶(Buckets)：符合条件的文档的集合，相当于SQL中的group by。比如，在users表中，按“地区”聚合，一个人将被分到北京桶或上海桶或其他桶里；按“性别”聚合，一个人将被分到男桶或女桶
+- 指标(Metrics)：基于Buckets的基础上进行统计分析，相当于SQL中的count,avg,sum等。比如，按“地区”聚合，计算每个地区的人数，平均年龄等
+
+默认情况下，聚合查询是在aggs字段中进行设置。
+
+#### max/min/avg/sum/stats(包括前面几项)
+
+```json
+## 查询price字段之和
+GET /books/_search
+{
+    "size": 0,//size=0 表示不需要返回参与查询的文档。
+    "aggs": {
+      "price_count": { // price_count为返回字段的名称设置
+        "sum": {
+          "field": "price"
+        }
+      }
+    }
+}
+# 查询price字段的统计情况 最大值最小值平均和
+GET /books/_search
+{
+    "size": 0,
+    "aggs": {
+      "price_stats": {
+        "stats": {
+          "field": "price"
+        }
+      }
+    }
+}
+//返回
+{
+  "took" : 13,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 2,
+    "max_score" : 0.0,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "price_stats" : {
+      "count" : 2,
+      "min" : 100.0,
+      "max" : 139.0,
+      "avg" : 119.5,
+      "sum" : 239.0
+    }
+  }
+}
+
+```
+
+#### **percentiles 求百分比**
+
+percentiles对指定字段（脚本）的值按从小到大累计每个值对应的文档数的占比（占所有命中文档数的百分比），返回指定占比比例对应的值。默认返回[ 1, 5, 25, 50, 75, 95, 99 ]分位上的值
+
+```json
+GET /books/_search
+{
+    "size": 0,
+    "aggs": {
+      "percenlis_stats": {
+        "percentiles": {
+          "field": "price"
+        }
+      }
+    }
+}
+```
+
+#### 文档数量统计
+
+```java
+GET /books/_search
+{
+    "size": 0,
+    "aggs": {
+      "doc_count": {
+        "value_count": {
+          "field": "price"
+        }
+      }
+    }
+}
+```
+
+#### Terms聚合
+
+```json
+# 根据价格统计各个价格的书籍有几条记录 注意这种方式只能统计大概，并不能准确的统计
+GET /books/_search
+{
+    "size": 0,
+    "aggs": {
+        "genders": {
+        "terms": {
+          "field": "price"
+        }
+      }
+    }
+}
+
+```
+
+
 
