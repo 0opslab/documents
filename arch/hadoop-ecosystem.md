@@ -16,6 +16,13 @@ HDFS是Hadoop体系中数据存储管理的基础。它是一个高度容错的�
 
 MapReduce是一种分布式计算模型，用以进行大数据量的计算。它屏蔽了分布式计算框架细节，将计算抽象成map和reduce两部分，其中Map对数据集上的独立元素进行指定的操作，生成键-值对形式中间结果。Reduce则对中间结果中相同“键”的所有“值”进行规约，以得到最终结果。MapReduce非常适合在大量计算机组成的分布式并行环境里进行数据处理。
 
+### yarn
+
+Hadoop2.0中引入了YARN。YARN的核心思想就是将资源管理和JOB的调度/监控进行分离。Yarn的核心组建可以分为俩大部分。全局组件:ResourceManager作为全局统一的资源管理、调度、分配。NodeManager在每一个节点上都有一个Node Manager作为代理监控节点的资源使用情况（cpu, memory, disk, network）并向Resource Manager上报节点状态。Per-applicaiton组件Application Master: 负责数据处理job的执行调度。Application Master与Resource Manager进行沟通，获取资源进行计算。得到资源后，与节点上的Node Manager进行沟通，在分配的Container汇总执行任务，并监控任务执行的情况。Container: 资源的一种抽象方式，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等，当Application Master向Resource Manager申请资源时，Resource Manager为Application Master返回的资源便是Container。
+
+
+
+
 
 
 ### HADOOP中的那些概念

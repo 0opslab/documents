@@ -1,12 +1,32 @@
 ### 常见的大数据处理流程
 
-MapReduce:  Input -> map（reduce） -> output
+以下是常见的大数据处理框架的一个基本核心过程
 
-storm： Input > spout/bolt -> output
+​	MapReduce:  Input -> map（reduce） -> output
 
-spark: input > transformation/action -> output
+​	storm： Input > spout/bolt -> output
 
-flink: input > transformation/sink -> output
+​	spark: input > transformation/action -> output
+
+​	flink: input > transformation/sink -> output
+
+## flink 
+
+经常会听到spark是现在，flink是为了。可见flink再数据处理方面flink是有着自己独有的优势。Flink是一个分层系统，从下到上分为：系统部署层、任务运行层、API层以及基于API开发的通用库层(Libraries)。而对于开发者而言，flink主要分为stateful Stream Processiing\Core APIS\Table & SQL。相对而言更多是面对core apis和table&sql
+
+* Stateful Stream Processiing
+    * 位于最底层，是core API的底层实现
+    * process Function
+    * 利用低阶，构建一些新组件
+    * 灵活度高，但看法比较复杂
+* core apis
+    * DataStream 流式处理
+    * DataSet 批量处理
+* table & sql
+    * SQL构建在Table之上，都需要构建Table环境
+    * 不同类型的Table构建不同的Table环境
+    * Table可以与DataStream或者DataSet进行相互转换。
+    * Streaming SQL不同存储的SQL， 最终会转化为流式执行计划
 
 
 
@@ -20,6 +40,14 @@ flink: input > transformation/sink -> output
 * DataStram: 流式处理，其结构封装实现输入流的处理，其也实现了丰富的函数支持
   * 所有的操作为StreamOperator的子类，实现具体逻辑，比如Join逻辑是在`IntervalJoinOperator`中实现的
 
+### transform
+
+在flink中数据通过source进入数据流中，通过transform进行各种数据计算。然后交由sink进行数据沉淀输出。Flink中数据流中主要的操作都通过算子transformation来操作(如:过滤、修改状态、定义窗口、聚合等)。具体的算子可以单独参考：
+
+​	https://ci.apache.org/projects/flink/flink-docs-master/dev/datastream_api.html
+
+
+
 ### time
 
 在Flink中，有以下三种时间特征
@@ -28,7 +56,7 @@ flink: input > transformation/sink -> output
 - Event time ： 事件发生时间。是每条数据在其生产设备上发生的时间。这段时间通常嵌入在记录数据中，然后进入Flink，可以从记录中提取事件的时间戳；Event Time即使在数据发生乱序，延迟或者从备份或持久性日志中重新获取数据的情况下，也能提供正确的结果。这个时间是最有价值的，和挂在任何电脑/操作系统的时钟时间无关。
 - Ingestion time：被Flink摄入的时间。是事件进入Flink的时间。 在Source算子处产生，也就是在Source处获取到这个数据的时间，Ingestion Time在概念上位于Event Time和Processing Time之间。在Source处获取数据的时间,不受Flink分布式系统内部处理Event的先后顺序和数据传输的影响，相对稳定一些，但是Ingestion Time和Processing Time一样，不能准确地反应数据发生的时间序列情况。
 
-#### watermark机制
+### watermark机制
 
 上面提到Event Time是最能反映数据时间属性的，但是Event Time可能会发生延迟或乱序，Flink系统本身只能逐个处理数据，为此能有效而处理Event Time这种乱序带来的问题，flink提供了watermark机制，Watermark是一个对Event Time的标识，内容方面Watermark是个时间戳，一个带有时间戳X的Watermark到达，相当于告诉Flink系统，任何Event Time小于X的数据都已到达。
 
