@@ -57,6 +57,21 @@ docker rm  con_name
 
 #查看docker网络
 docker network ls
+
+# 进入容器
+docker attach 775c7c9ee1e1
+docker exec -it 775c7c9ee1e1 /bin/bash 
+
+
+# 上传文件
+docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+docker cp /root/test.txt ecef8319d2c8:/root/
+
+# 下载链接
+docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH
+docker cp ecef8319d2c8:/root/test.txt /root/
+
+
 ```
 
 ### docker 创建固定ip的容器
@@ -124,4 +139,17 @@ docker run -itd --name networkTest1 --net mynetwork --ip 172.18.0.2 centos:lates
 ```
 
 
+
+### 常用命令
+
+```bash
+### 启动固定主机名固定主机IP的容器
+## 通过-h参数指定主机名
+## 通过——name指定容器名
+## 通过--network指定网络
+## 通过-p指定端口映射
+## http://hadoop01:8088
+## http://hadoop01:50070
+docker run -d -h hadoop01 --name hadoop01 --network=dockernet --ip 135.191.1.100  centos:hadoop /run.sh
+```
 
