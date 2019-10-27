@@ -35,7 +35,7 @@ override def run(ctx: SourceContext[MyType]): Unit = {
 
 在说具体的代码实现前，先看看flink为Timestamps assigner时间戳分配器提供的接口及继承关系。首先定义了org.apache.flink.streaming.api.functions.TimestampAssigner接口，其次又有如下的继承关系
 
-![1567336431863](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1567336431863.png)
+![1567336431863](C:\Users\Administrator\Desktop\1567336431863.png)
 
 从继承关系中可以明显的看出其主要分为AssignerWithPeriodicWatermarks和AssignerWithPunctuatedWatermarks俩大类别的接口。其实其也对应着俩大业务场景。
 
