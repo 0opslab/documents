@@ -51,12 +51,14 @@
 
 
 ### 大数据平台架构
-接入层，接入层技术有:canal/sqoop、flume
-存储层，存储层有:HDFS、 HBASE、KAFKA
-调度层，Yarn、kubernetes
-计算层，MR、Hive、Strom、Spark、kylin、flink、caffe/Tensorflow
+```
+接入层:canal/sqoop、flume
+存储层:HDFS、 HBASE、KAFKA
+调度层:Yarn、kubernetes
+计算层:MR、Hive、Strom、Spark、kylin、flink、caffe/Tensorflow
 应用平台，交互分析SQL,多维度分析
 可视化平台，数据分析tableau、阿里datav、hcharts、echarts
+```
 
 * [hadoop-ecosystem](db/hadoop-ecosystem.md) -hadoop-ecosystem生态系统
 * [kafka](db/kafka.md) -kafka的使用帮助文档
