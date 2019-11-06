@@ -13,7 +13,7 @@
 
 
 
-## tools
+tools
 
 常用工具和命令
 
@@ -33,13 +33,19 @@
 * [Jmeter.md](tools/Jmeter.md) -Jmeter使用帮助文档
 
 
-## java
+### java
 
 * [java-fqa](java/java-fqa.md) - Java常见问题答疑
 
+### code
+
+* [common-reg](dev/command-reg.md) - 常用的正则表达式
+* [xpath](dev/xpath.md) - xpath表达式
+* [android-AndroidManifest](dev/android-AndroidManifest.md) - android-AndroidManifest
 
 
-## linux
+
+### linux
 
 linux相关的一些说明和脚本
 
@@ -53,7 +59,16 @@ linux相关的一些说明和脚本
 * [mysql_backup.sh](linux/bash/mysql_back.sh) -mysql备份
 * [tomcat_startWap.sh](linux/bash/tomcat_startWap.sh) -一个tomcat启动脚本
 
-## 大数据平台架构
+
+### 数据库
+* [mysql-install-ubuntu](db/mysql-install-ubuntu.md) -mysql-install-ubuntu
+* [mysql-mysqldump](db/mysql-mysqldump.md) -mysqldump帮助文档
+* [oralce-dba-sql](db/oralce-dba-sql.md) -oralce-dba-sql
+* [oracle-str-split](db/oracle-str-split.md) -oracle-str-split
+* [oracle-reg](db/oracle-reg.md) -oracle-reg
+
+
+### 大数据平台架构
 
 * 接入层，接入层技术有:canal/sqoop、flume
 * 存储层，存储层有:HDFS、 HBASE、KAFKA
@@ -64,8 +79,15 @@ linux相关的一些说明和脚本
 
 * [hadoop-ecosystem](db/hadoop-ecosystem.md) -hadoop-ecosystem生态系统
 * [kafka](db/kafka.md) -kafka的使用帮助文档
+* [elasticsearch](db/elasticsearch.md) -elasticsearch的使用帮助文档
 * [elasticsearch-shell](db/elasticsearch-shell.md) -elasticsearch-shell的使用帮助文档
 * [spark](db/spark.md) -spark的使用帮助文档
 * [spark-javaspark](db/spark-javaspark.md) -spark-java编程文档
 * [hbase](db/hbase.md) -hbase文档
-* [hbase-shell](db/hbase-shell.md) -hbase文档
+* [hbase-shell](db/hbase-shell.md) -hbase-shell文档
+* [flume](db/flume.md) -flume帮助文档
+* [hive](db/hive.md) -hive帮助文档
+* [flink](db/flink.md) -flink帮助文档
+* [flink-shell](db/flink-shell.md) -flink-shell帮助文档
+* [flink-transform](db/flink-transform.md) -flink-transform帮助文档
+* [flink-timewatermark](db/flink-timewatermark.md) -flink-timewatermark帮助文档
