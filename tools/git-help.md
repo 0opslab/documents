@@ -190,6 +190,42 @@ git merge <远程库别名/远程库分支名>
 git fork
 ```
 
+## 暂存操作
+
+```bash
+git stash 暂存当前修改
+git stash apply 恢复最近的一次暂存
+git stash pop 恢复暂存并删除暂存记录
+git stash list 查看暂存列表
+git stash drop 暂存名(例：stash@{0}) 移除某次暂存
+git stash clear 清除暂存
+```
+
+## 回退操作
+
+```bash
+git reset --hard HEAD^ 回退到上一个版本
+git reset --hard ahdhs1(commit_id) 回退到某个版本
+git checkout -- file撤销修改的文件(如果文件加入到了暂存区，则回退到暂存区的，如果文件加入到了版本库，则还原至加入版本库之后的状态)
+git reset HEAD file 撤回暂存区的文件修改到工作区
+```
+
+##  标签操作
+
+```bash
+git tag 标签名 添加标签(默认对当前版本)
+git tag 标签名 commit_id 对某一提交记录打标签
+git tag -a 标签名 -m '描述' 创建新标签并增加备注
+git tag 列出所有标签列表
+git show 标签名 查看标签信息
+git tag -d 标签名 删除本地标签
+git push origin 标签名 推送标签到远程仓库
+git push origin --tags 推送所有标签到远程仓库
+git push origin :refs/tags/标签名 从远程仓库中删除标签
+```
+
+
+
 ## FQA
 
 * 我要删掉记录的文件的路径是(相对于项目):src/main/resources/config/application-test.yml

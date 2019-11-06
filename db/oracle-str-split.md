@@ -1,10 +1,3 @@
-title: Oracle 拆分字符串 字符串分割
-date: 2016-01-02 22:40:59
-tags:
-    - sql
-    - oracle
-categories: Oracle
----
 在 PLSQL编程的时候经常需要用到对字符串的操作，例如拆分和分割等。但Oracle中没有可以可用的方法因此需要自己实现。
 
 ## 分割
