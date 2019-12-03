@@ -2,6 +2,12 @@
 ### 项目内容:
 包含常用软件的shell 安装脚本,以及依赖配置.(包括 Centos, Ubuntu, Mac OSX 等)常用命令功能说明文档.已经常用文档软件的使用帮助文档。
 
+### python
+* [python](tools/docker.md) - python常用
+* [python利用hash比较文件变化](tools/python-compare-filehash.md)
+* [python查找重复文件](tools/Python-find-repeated-file.md)
+
+
 
 ### tools
 * [docker](tools/docker.md) - docker
@@ -75,3 +81,6 @@
 * [flink-transform](db/flink-transform.md) -flink-transform帮助文档
 * [flink-timewatermark](db/flink-timewatermark.md) -flink-timewatermark帮助文档
 * [zookeeper](db/zookeeper.md) -常用操作及说明
+* [mysql-install-ubuntu](db/mysql-install-ubuntu.md) - ubuntu按照mysql
+* [mysqldump](db/mysql-mysqldump.md) - mysqldump的使用
+* [mysql-sql](db/mysql-sql.md) - mysql常用的sql
