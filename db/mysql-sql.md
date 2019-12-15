@@ -205,8 +205,25 @@ source 全备.sql
 #### 常用sql
 ```sql
 
+# 随机
 SELECT * FROM address WHERE id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM address))) ORDER BY id LIMIT 0,10
 
-
+# 随机
 SELECT *,RAND() as r FROM address ORDER BY r LIMIT 0,10
+
+
+# insert into select from的使用
+INSERT INTO db1_name(field1,field2) SELECT field1,field2 FROM db2_name
+
+INSERT INTO a(field1,field2) SELECT * FROM(SELECT f1,f2 FROM b JOIN c) AS tb
+
+
+########################################
+# create table as select 
+
+# 复制表和表数据
+CREATE TABLE app_enword_user_old SELECT * FROM app_enword_user;
+
+#复制全部数据
+select * into new_table from old_table;
 ```
