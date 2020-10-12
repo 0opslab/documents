@@ -1,0 +1,12 @@
+-   The following is a list of the possible formats:  
+    -   \<computer>\\\<Object>(\<Parent>/\<Instance#Index>)\<Counter>  
+    -   \<computer>\<Object>(<Parent>/<Instance>)\\<Counter>  
+    -   \\\\<computer>\\<Object>(<Instance#Index>)\\<Counter>  
+    -   \\\\<computer>\\<Object>(<Instance>)\\<Counter>  
+    -   \\\\<computer>\\<Object>\\<Counter>  
+    -   \\<Object>(<Parent>/<Instance#Index>)\\<Counter>  
+    -   \\<Object>(<Parent>/<Instance>)<Counter>  
+    -   \\<Object>(<Instance#Index>)\\<Counter>  
+    -   \\<Object>(<Instance>)\\<Counter>  
+    -   \\<Object>\\<Counter>  
+--->
