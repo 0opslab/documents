@@ -14,7 +14,7 @@ _book
 *.epub
 *.mobi
 *.pdf
-
+.svn/
 
 # tmp
 tmp/
