@@ -1,3 +1,0 @@
-# use mysql;
-# insert into mysql.user(Host,User,Password)  values("localhost","dbuser",password("123456"));
-create user 'dbuser'@'%' identified by '123456';
