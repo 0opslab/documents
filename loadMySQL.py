@@ -5,6 +5,7 @@ import re
 
 fileSuffix = ['.py','.md','.sql','.bat','.pl','.ps1','.vbs','.sh',".js"]
 
+
 def loadFileContent(path_string):
   '''获取文件内容'''
   try:
@@ -35,10 +36,6 @@ def fileNameGorupCount(path):
   for f in count_list:
     if(f[1] > 1):
       print(f[0])
-
-fileSuffix = ['.py','.md','.sql','.bat','.pl','.ps1','.vbs','.sh',".js"]
-
-
 
 ### 获取脚本函数关键词
 def cleanComment(res):
@@ -80,6 +77,23 @@ def GetFuncComment(file_path):
         reMap = {'type':item['type'],'list':resList}
         ress.append(reMap)
     return ress
+
+
+def Save2db(conn,title,command_type,command,content):
+  """保存或更新记录"""
+  insert = "insert t_command_content(title,command_type,command,content) values('%s','%s','%s','%s')"
+  delete = "delete from t_command_content where command_type='%s' and command ='%s'"
+  try:
+    delete_sql = delete % (command_type, command)
+    insert_sql = insert % (
+        title, command_type, command, content)
+    print(delete_sql)
+    mycur = conn.cursor()
+    mycur.execute(delete_sql)
+    mycur.execute(insert_sql)
+    conn.commit()
+  except Exception as es:
+    print("保存入库失败===>"+es)
 
 if __name__ == "__main__":
   path = "D:\\workspace\\useful-command"
